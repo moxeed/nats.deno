@@ -133,6 +133,9 @@ export class Parser {
             case cc.i:
               this.state = State.OP_I;
               break;
+            case cc.ZERO:
+              this.state = State.ZERO_MSG
+              break;
             default:
               throw this.fail(buf.subarray(i));
           }
@@ -245,6 +248,22 @@ export class Parser {
             this.msgBuf = undefined;
             this.state = State.MSG_END;
           }
+          break;
+        case State.ZERO_MSG:
+          this.ma = newMsgArg()
+          this.ma.sid = 1;
+          this.ma.hdr = 0;
+          this.ma.subject = new TextEncoder().encode("zero")
+          this.ma.size = buf[i++] * 256 + buf[i++];
+
+          const data = buf.subarray(i, i + this.ma.size);
+          i = (i + this.ma.size) - 1;
+          this.dispatcher.push(
+            { kind: Kind.MSG, msg: this.ma, data: data },
+          );
+          this.argBuf = undefined;
+          this.msgBuf = undefined;
+          this.state = State.OP_START;
           break;
         case State.MSG_END:
           switch (b) {
@@ -712,6 +731,7 @@ export enum State {
   OP_INFO,
   OP_INFO_SPC,
   INFO_ARG,
+  ZERO_MSG
 }
 
 enum cc {
@@ -745,4 +765,5 @@ enum cc {
   s = "s".charCodeAt(0),
   SPACE = " ".charCodeAt(0),
   TAB = "\t".charCodeAt(0),
+  ZERO = 0
 }
