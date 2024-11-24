@@ -251,7 +251,7 @@ export class Parser {
           break;
         case State.ZERO_MSG:
           this.ma = newMsgArg()
-          this.ma.sid = 1;
+          this.ma.sid = 0;
           this.ma.hdr = 0;
           this.ma.subject = new TextEncoder().encode("zero")
           this.ma.size = buf[i++] * 256 + buf[i++];
