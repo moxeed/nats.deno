@@ -315,9 +315,7 @@ export class Subscriptions {
   get(sid: number): SubscriptionImpl | undefined {
     if (sid == 0){
       const next = this.subs.values().next();
-      if (next.done){
-        return next.value;
-      }
+      return next.value;
     }
     return this.subs.get(sid);
   }
